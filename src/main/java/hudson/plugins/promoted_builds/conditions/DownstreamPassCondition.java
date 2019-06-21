@@ -16,7 +16,6 @@ import hudson.plugins.promoted_builds.PromotionBadge;
 import hudson.plugins.promoted_builds.PromotionCondition;
 import hudson.plugins.promoted_builds.PromotionConditionDescriptor;
 import hudson.plugins.promoted_builds.PromotionProcess;
-import hudson.plugins.promoted_builds.util.JenkinsHelper;
 import hudson.security.ACL;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -133,7 +132,7 @@ public class DownstreamPassCondition extends PromotionCondition {
         if (expandedJobs == null) return r;
         
         for (String name : Util.tokenize(expandedJobs,",")) {
-            AbstractProject job = JenkinsHelper.getInstance().getItem(name.trim(), context, AbstractProject.class);
+            AbstractProject job = Jenkins.get().getItem(name.trim(), context, AbstractProject.class);
             if(job!=null)   r.add(job);
         }
         return r;
@@ -179,7 +178,7 @@ public class DownstreamPassCondition extends PromotionCondition {
      * @deprecated use {@link #contains(hudson.model.ItemGroup, hudson.model.AbstractProject)}
      */
     public boolean contains(AbstractProject<?,?> job) {
-        return contains(Jenkins.getInstance(), job);
+        return contains(Jenkins.get(), job);
     }
 
     public static final class Badge extends PromotionBadge {
@@ -218,7 +217,7 @@ public class DownstreamPassCondition extends PromotionCondition {
 
         public AutoCompletionCandidates doAutoCompleteJobs(@QueryParameter String value, @AncestorInPath AbstractProject project) {
             List<AbstractProject> downstreams = project.getDownstreamProjects();
-            List<Item> all = JenkinsHelper.getInstance().getItems(Item.class);
+            List<Item> all = Jenkins.get().getItems(Item.class);
             List<String> candidatesDownstreams = Lists.newArrayList();
             List<String> candidatesOthers = Lists.newArrayList();
             for (Item i : all) {
@@ -267,7 +266,7 @@ public class DownstreamPassCondition extends PromotionCondition {
             EnvVars buildEnvironment = new EnvVars(build.getBuildVariables());
             SecurityContext previousCtx = ACL.impersonate(ACL.SYSTEM);
             try {
-                for (AbstractProject<?,?> j : JenkinsHelper.getInstance().getAllItems(AbstractProject.class)) {
+                for (AbstractProject<?,?> j : Jenkins.get().getAllItems(AbstractProject.class)) {
                     boolean warned = false; // used to avoid warning for the same project more than once.
 
                     JobPropertyImpl jp = j.getProperty(JobPropertyImpl.class);

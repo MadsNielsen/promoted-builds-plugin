@@ -7,7 +7,6 @@ import hudson.model.AbstractProject;
 import hudson.model.Job;
 import hudson.model.TaskListener;
 import hudson.plugins.promoted_builds.PromotionConditionDescriptor;
-import javafx.concurrent.Task;
 import jenkins.model.Jenkins;
 
 import javax.annotation.Nonnull;
@@ -26,10 +25,11 @@ public class GroovyConditionDescriptor extends PromotionConditionDescriptor {
         super(GroovyCondition.class);
     }
 
-   public boolean isApplicable(@Nonnull Job<?,?> item, TaskListener listener){
-        if(item instanceof AbstractProject){
-            return isApplicable((AbstractProject)item, TaskListener.NULL);
-        }else{
+    @Override
+    public boolean isApplicable(@Nonnull Job<?,?> item, TaskListener listener) {
+        if (item instanceof AbstractProject) {
+            return isApplicable((AbstractProject) item, TaskListener.NULL);
+        } else {
             final Jenkins jenkins = Jenkins.getInstance();
             if (jenkins == null) {
                 // Jenkins not started or shut down
@@ -43,13 +43,12 @@ public class GroovyConditionDescriptor extends PromotionConditionDescriptor {
             final PluginWrapper plugin = pluginManager.getPlugin("script-security");
             return plugin != null && plugin.isActive();
         }
-
-   }
-
-   public boolean isApplicable(AbstractProject<?, ?> item) {
-        return false;
     }
 
+    @Override
+    public boolean isApplicable(AbstractProject<?, ?> item) {
+        return false;
+    }
 
     @Override
     public String getDisplayName() {

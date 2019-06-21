@@ -26,23 +26,18 @@ public class PromotionConditionDescriptorTest {
     @Test
     public void free() throws Exception {
         final String message = "Testing done for pipeline";
-
         FreeStyleProject p = j.createFreeStyleProject("p");
         FreeStyleBuild build = j.buildAndAssertSuccess(p);
         Builder step = Functions.isWindows() ? new BatchFile(message) : new Shell(message);
         p.getBuildersList().add(step);
-        j.assertLogContains(message,build);
-
+        j.assertLogContains(message, build);
     }
 
     @Test
     public void pipe() throws Exception {
-
         final WorkflowJob jo = j.jenkins.createProject(WorkflowJob.class, "jo");
         jo.setDefinition(new CpsFlowDefinition("node { echo 'This is pipeline inside the promoted-builds' }", true));
-
         WorkflowRun build = j.buildAndAssertSuccess(jo);
-
         j.assertLogContains("This is pipeline inside the promoted-builds",build);
     }
 
